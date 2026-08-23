@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graphic Design - Adeeba</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+</head>
+<body>
+<a href="#grid" class="skip-link">Skip to projects</a>
+
+<div class="backdrop" aria-hidden="true" id="backdrop"></div>
+<canvas class="motes" id="motes" aria-hidden="true"></canvas>
+
+<header class="site">
+  <a href="index.html" class="wordmark">Adeeba Ahmed</a>
+  <nav class="top" aria-label="Primary">
+    <ul>
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+    <span class="menu-bar"></span>
+  </button>
+</header>
+
+<main>
+  <section class="cat-hero">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span aria-hidden="true">/</span><span>Graphic Design</span>
+    </nav>
+    <h1>Graphic <em>Design</em></h1>
+    <p class="lede">Visual design exploring typography, composition, imagery, and creative direction across different formats.</p>
+  </section>
+
+  <section class="gallery" id="grid">
+    <div class="pieces" id="the-grid" role="list"></div>
+  </section>
+</main>
+
+<div class="spotlight-veil" id="spotlight-veil" hidden>
+  <div class="spotlight" role="dialog" aria-modal="true" aria-labelledby="spotlight-title" id="spotlight">
+    <button class="spotlight-shut" id="spotlight-shut" aria-label="Close">&times;</button>
+    <div class="spotlight-stage" id="spotlight-stage"></div>
+    <div class="spotlight-info">
+      <span class="kicker" id="spotlight-kicker"></span>
+      <h2 id="spotlight-title"></h2>
+      <span class="when" id="spotlight-when"></span>
+      <p id="spotlight-context"></p>
+    </div>
+  </div>
+</div>
+
+<div class="dim-switch">
+  <button id="dim-switch-btn" aria-pressed="false">
+    <span class="bracket">[</span>invert<span class="bracket">]</span>
+  </button>
+</div>
+
+<script src="common.js"></script>
+<script src="graphic-design-data.js"></script>
+</body>
+</html>

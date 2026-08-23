@@ -1,0 +1,1096 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+/* ================================================================
+   context behind theme
+   tbh i cant choose an aesthetic, i love purples and blues in their dark form
+   but also their icy light forms so that's why i hav an invert button.
+   the dark mode is inspired by coraline, and the light mode is inspired by barbie swan lake.
+   ================================================================ */
+html[data-theme="dark"] {
+  --bg: #07060f;
+  --bg-soft: #100c1e;
+  --line: rgba(140, 160, 232, 0.16);
+  --ink: #e8e9f5;
+  --ink-dim: #8b8fb3;
+  --ink-faint: #4a4d70;
+  --accent: #7ba3e8;
+  --accent-2: #6c7fdb;
+  --accent-3: #4a3f8f;
+  --accent-4: #241f45;
+  --glow: #eef1ff;
+  --focus: #d7e0ff;
+  --haze: 0.62;
+}
+
+html[data-theme="light"] {
+  --bg: #f5f7fc;
+  --bg-soft: #ffffff;
+  --line: #dde3f4;
+  --ink: #1f2438;
+  --ink-dim: #5b6280;
+  --ink-faint: #9aa2c4;
+  --accent: #5a7bc4;
+  --accent-2: #8d6fd6;
+  --accent-3: #b8c8ec;
+  --accent-4: #e8ecfa;
+  --glow: #6f4fc9;
+  --focus: #3a4f9f;
+  --haze: 0.5;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(
+      ellipse 80% 55% at 50% -10%,
+      color-mix(in srgb, var(--accent-2) 20%, transparent) 0%,
+      var(--bg) 60%
+    ),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.5s ease,
+    color 0.5s ease;
+  overflow-x: hidden;
+  padding-bottom: 3.5rem;
+}
+
+a {
+  color: inherit;
+}
+::selection {
+  background: var(--accent-2);
+  color: #fff;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.75rem 1.25rem;
+  z-index: 200;
+  font-weight: 600;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* ---------- backdrop: linework + drifting motes ---------- */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--haze);
+  transition: opacity 0.5s ease;
+}
+.backdrop svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.motes {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-theme="dark"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(ellipse 85% 75% at 50% 38%, transparent 35%, rgba(2, 1, 8, 0.6) 100%);
+}
+html[data-theme="light"] .hero::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  translate: -50% 0;
+  width: 900px;
+  height: 900px;
+  max-width: 140vw;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 22%, transparent) 0%, transparent 65%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ---------- header ---------- */
+header.site {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem clamp(1.5rem, 5vw, 4rem);
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  border-bottom: 1px solid var(--line);
+}
+.wordmark {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+nav.top ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+nav.top a {
+  text-decoration: none;
+  color: var(--ink-dim);
+  transition: color 0.25s ease;
+}
+nav.top a:hover,
+nav.top a[aria-current] {
+  color: var(--accent);
+}
+
+/* ---------- hamburger menu hidden on wide screens, takes over on phones ----------
+   3 lines that morph into an x. aria-expanded is already toggled by the JS
+   for the open/close + focus logic, so the animation just hangs off that  */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--line);
+  padding: 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.menu-toggle:hover {
+  border-color: var(--accent);
+}
+.menu-bar {
+  width: 16px;
+  height: 2px;
+  background: var(--ink-dim);
+  border-radius: 999px;
+  transform-origin: center;
+  transition: transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+.menu-toggle:hover .menu-bar {
+  background: var(--accent);
+}
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(2) {
+  opacity: 0;
+}
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+@media (max-width: 640px) {
+  .menu-toggle {
+    display: inline-flex;
+  }
+  nav.top {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+  }
+  nav.top.open {
+    max-height: 260px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  nav.top ul {
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem clamp(1.5rem, 5vw, 4rem) 1.25rem;
+  }
+  nav.top ul li {
+    border-bottom: 1px solid var(--line);
+  }
+  nav.top ul li:last-child {
+    border-bottom: none;
+  }
+  nav.top a {
+    display: block;
+    padding: 0.9rem 0;
+  }
+}
+
+/* ---------- little mono tag, used everywhere ---------- */
+.tagline {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  display: inline-block;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  position: relative;
+  min-height: 78svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem clamp(1.5rem, 5vw, 4rem) 3rem;
+  z-index: 1;
+  max-width: 1000px;
+}
+.hero .tagline {
+  margin-bottom: 2rem;
+}
+
+.hero-headline {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 8vw, 5.2rem);
+  line-height: 1.1;
+  margin: 0 0 1.75rem;
+  letter-spacing: -0.01em;
+}
+.hero-headline .row {
+  display: block;
+}
+.hero-headline em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(120deg, var(--accent), var(--glow) 55%, var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p.lede {
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  color: var(--ink-dim);
+  max-width: 48ch;
+  line-height: 1.65;
+  margin: 0 0 2.5rem;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease;
+  border: 1px solid var(--line);
+}
+.btn.primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 500;
+}
+.btn.primary:hover {
+  transform: translateY(-2px);
+  background: var(--glow);
+  color: var(--bg);
+}
+.btn.ghost {
+  color: var(--ink);
+  background: transparent;
+}
+.btn.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* ---------- section head, reused everywhere ---------- */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.1rem;
+}
+.section-head h2 {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  margin: 0;
+}
+.section-head .count {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   PRACTICE GRID (homepage)
+   ================================================================ */
+.practices {
+  padding: 2rem clamp(1.5rem, 5vw, 4rem) 6rem;
+  position: relative;
+  z-index: 1;
+}
+.practice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (max-width: 720px) {
+  .practice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.practice {
+  background: var(--bg-soft);
+  padding: 2.25rem 2rem;
+  text-decoration: none;
+  color: var(--ink);
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: background 0.3s ease;
+  isolation: isolate;
+}
+.practice::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--tint, var(--accent-2)), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: -1;
+}
+.practice:hover::before,
+.practice:focus-visible::before {
+  opacity: 0.2;
+}
+.practice:hover,
+.practice:focus-visible {
+  background: color-mix(in srgb, var(--bg-soft) 80%, var(--accent));
+}
+.practice .idx {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+}
+.practice h3 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 1.65rem;
+  margin: 1rem 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+.practice p {
+  font-size: 0.92rem;
+  color: var(--ink-dim);
+  margin: 0;
+  max-width: 34ch;
+  line-height: 1.55;
+}
+.practice .meta {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.practice .hex {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.practice .arrow {
+  font-size: 1.1rem;
+  color: var(--ink-faint);
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+.practice:hover .arrow {
+  transform: translateX(4px);
+  color: var(--accent);
+}
+
+/* ================================================================
+   ABOUT + CONTACT (homepage, back to back)
+   ================================================================ */
+.about {
+  padding: 2rem clamp(1.5rem, 5vw, 4rem) 4rem;
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+.about p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--ink-dim);
+  margin: 0 0 1.5rem;
+}
+.about p:last-of-type {
+  margin-bottom: 2rem;
+}
+.about-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.about-tags span {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+
+.contact {
+  padding: 0 clamp(1.5rem, 5vw, 4rem) 6rem;
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+.contact h2 {
+  font-family: "Fraunces", serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  margin: 0 0 1rem;
+}
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+}
+.contact-links a {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.2rem;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.contact-links a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.contact .fine-print {
+  margin-top: 3rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.68rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   CATEGORY PAGE HERO + BREADCRUMB
+   ================================================================ */
+.cat-hero {
+  padding: 4rem clamp(1.5rem, 5vw, 4rem) 2.5rem;
+  max-width: 900px;
+  position: relative;
+  z-index: 1;
+}
+.crumbs {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: 1.75rem;
+  display: flex;
+  gap: 0.6rem;
+}
+.crumbs a {
+  text-decoration: none;
+  color: var(--ink-dim);
+}
+.crumbs a:hover {
+  color: var(--accent);
+}
+.cat-hero .tagline {
+  margin-bottom: 1.25rem;
+  display: block;
+}
+.cat-hero h1 {
+  font-family: "Fraunces", serif;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5.5vw, 3.6rem);
+  line-height: 1.05;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.01em;
+}
+.cat-hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  background: linear-gradient(120deg, var(--accent), var(--glow) 60%, var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.cat-hero .lede {
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  color: var(--ink-dim);
+  max-width: 60ch;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ================================================================
+   PIECES (the project grid used on every category page)
+   ================================================================ */
+.gallery {
+  padding: 1rem clamp(1.5rem, 5vw, 4rem) 6rem;
+  position: relative;
+  z-index: 1;
+}
+.pieces {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 980px) {
+  .pieces {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 620px) {
+  .pieces {
+    grid-template-columns: 1fr;
+  }
+}
+
+.piece {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 0;
+  color: var(--ink);
+  font-family: inherit;
+}
+.piece:hover,
+.piece:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 20px 45px color-mix(in srgb, var(--accent-2) 25%, transparent);
+}
+
+.piece-shot {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--tint, var(--accent-2)), var(--bg-soft) 75%);
+}
+.piece-shot video,
+.piece-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.92;
+}
+/* the youtube hover/auto preview sits absolute over the poster. pointer-events:
+   none matters here. without it, a click landing on the visible preview would
+   go to youtube's iframe instead of the card underneath (iframes are a
+   separate document, so a click inside one never bubbles back out to trigger
+   the card's own click handler), and the spotlight would never open. */
+.piece-shot .yt-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+}
+.piece-shot .badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--glow);
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+.piece-shot .peek {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.piece-shot .peek svg {
+  width: 42px;
+  height: 42px;
+}
+.piece:hover .peek,
+.piece:focus-visible .peek {
+  opacity: 1;
+}
+.piece-shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg) 70%, transparent) 100%);
+}
+
+.piece-info {
+  padding: 1.1rem 1.25rem 1.4rem;
+}
+.piece-info .kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.piece-info h3 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin: 0.5rem 0 0.3rem;
+}
+.piece-info .when {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+
+/* website cards get a "visit" hint instead of a play icon */
+.piece-shot .visit-hint {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--glow);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(6px);
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.piece:hover .visit-hint,
+.piece:focus-visible .visit-hint {
+  opacity: 1;
+}
+
+/* ---------- pager (grid pagination, see script.js, off by default) ---------- */
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 3rem;
+}
+.pager-btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.pager-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.pager-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed !important;
+}
+.pager-status {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+}
+
+/* ================================================================
+   SPOTLIGHT (the lightbox opened by clicking a piece)
+   ================================================================ */
+.spotlight-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.spotlight-veil[hidden] {
+  display: none;
+}
+.spotlight {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  max-width: 880px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+}
+.spotlight-shut {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 8;
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.spotlight-shut:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.spotlight-stage {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+.spotlight-stage video,
+.spotlight-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  display: block;
+}
+
+/* carousel controls, only present when a piece has multiple frames */
+.carousel-prev,
+.carousel-next {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 6;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: rgba(0, 0, 0, 0.65);
+}
+.carousel-prev {
+  left: 14px;
+}
+.carousel-next {
+  right: 14px;
+}
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 0.4rem;
+  z-index: 6;
+}
+.carousel-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+.carousel-dots span.active {
+  background: #fff;
+  transform: scale(1.3);
+}
+
+/* slide-in for whichever frame just got swiped/clicked to, so moving
+   thru a carousel feels like swiping instead of a flat static swap.
+   direction-aware. next comes in from the right, prev comes in from
+   the left. common.js skips adding these classes entirely for
+   reduced-motion browsers, so no need to guard it again in here. */
+@keyframes frameInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes frameInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.frame-slide-next {
+  animation: frameInFromRight 0.32s ease-out;
+}
+.frame-slide-prev {
+  animation: frameInFromLeft 0.32s ease-out;
+}
+
+.spotlight-info {
+  padding: 1.75rem 2rem 2.25rem;
+}
+.spotlight-info .kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.spotlight-info h2 {
+  font-family: "Fraunces", serif;
+  font-weight: 500;
+  font-size: 1.8rem;
+  margin: 0.6rem 0 0.35rem;
+}
+.spotlight-info .when {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: 1rem;
+}
+.spotlight-info p {
+  color: var(--ink-dim);
+  line-height: 1.7;
+  margin: 0 0 1.25rem;
+  max-width: 65ch;
+}
+.spotlight-info .visit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 0.15rem;
+}
+.spotlight-info .visit-link:hover {
+  color: var(--glow);
+  border-color: var(--glow);
+}
+
+/* website preview inside the spotlight (screenshot + live embed link) */
+.site-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+}
+.embed-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+}
+
+footer.tail {
+  display: none; /* the about/contact sections replace the old footer; kept off by default */
+}
+
+/* ================================================================
+   STICKY INVERT BAR + hover state
+   ================================================================ */
+.dim-switch {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.6rem clamp(1.25rem, 4vw, 3rem);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  transition:
+    background 0.5s ease,
+    border-color 0.5s ease;
+}
+.dim-switch button {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ink-faint);
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    opacity 0.25s ease;
+  opacity: 0.7;
+}
+.dim-switch button:hover {
+  color: var(--accent);
+  border-color: var(--line);
+  opacity: 1;
+}
+.dim-switch .bracket {
+  color: var(--ink-faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .btn:hover,
+  .practice:hover .arrow,
+  .piece:hover {
+    transform: none;
+  }
+  .backdrop * {
+    animation: none !important;
+  }
+}
+
+/* cursor */
+html, body {
+    cursor: url('assets/cursor.png') 0 0, default !important;
+}
+
+/* pointer */
+a, button, .clickable {
+    cursor: url('assets/pointer.png') 0 0, pointer !important;
+}
+}
