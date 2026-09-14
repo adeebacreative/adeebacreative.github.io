@@ -75,7 +75,21 @@
       sometimes blocks links that get real traffic. wouldn't rely on it.
 ================================================================== */
 const videoProjects = [
-  {
+    {
+    type: "video",
+    tag: "Recap Reel",
+    title: "IRW 2026 (Recap Reel)",
+    date: "September 2026",
+    context:
+      "A recap reel created for IRW 2026, wrapping the event through 3d modelling, motion graphics and sound fx.",
+    poster: "https://img.youtube.com/vi/AlNKu7T7SLk/maxresdefault.jpg",
+    preview: "",
+    full: "",
+    embed: "https://youtu.be/AlNKu7T7SLk",
+    accent: "#6c7fdb"
+  },
+   
+   {
     type: "video",
     tag: "Promo Video",
     title: "IRW 2026 (Promo Video)",
