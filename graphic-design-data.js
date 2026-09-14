@@ -7,7 +7,7 @@ const graphicProjects = [
    {
     tag: "Experiments",
     title: "Nothing to Lose",
-    date: "September 2025",
+    date: "September 2026",
     context:
       "An experimental piece exploring melancholy and impermanence through rainy imagery, distorted typography, and expressive pixel elements. The contrast between the cold, reflective photograph and vivid yellow details creates a deliberately chaotic, dreamlike composition.",
     accent: "#8d6fd6",
