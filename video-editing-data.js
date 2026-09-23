@@ -75,7 +75,20 @@
       sometimes blocks links that get real traffic. wouldn't rely on it.
 ================================================================== */
 const videoProjects = [
-    {
+   {
+    type: "video",
+    tag: "Video Essay",
+    title: "Misogyny in Gaming (Assignment)",
+    date: "September 2026",
+    context: "Video essay for a social marketing subject. Research, scriptwriting, motion graphics and voiceover all by me. Tbh I'm really happy with the result, but I might go back and add more sfx.",
+    poster: "https://img.youtube.com/vi/_kEcwvtBwAI/maxresdefault.jpg",
+    preview: "",
+    full: "",
+    embed: "https://youtu.be/_kEcwvtBwAI",
+    accent: "#6c7fdb"
+  },
+   
+   {
     type: "video",
     tag: "Recap Reel",
     title: "IRW 2026 (Recap Reel)",
