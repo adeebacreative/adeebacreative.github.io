@@ -4,6 +4,16 @@
    in dat file for how frames/carousels work and how to add images.)
 ================================================================== */
 const graphicProjects = [
+
+   {
+    tag: "Experiments",
+    title: "Everlong",
+    date: "September 2025",
+    context:
+      "An experimental piece inspired by Foo Fighters’ 'Everlong', using underwater imagery, layered textures, and distorted typography to recreate the song’s hazy, submerged atmosphere.",
+    accent: "#8d6fd6",
+    frames: [{ type: "image", src: "assets/graphic-design/everlong.jpg" }]
+  },
    
     {
     tag: "Experiments",
