@@ -6,6 +6,16 @@
 const graphicProjects = [
   {
     tag: "Experiments",
+    title: "Chance",
+    date: "September 2025",
+    context:
+      "An experimental piece inspired by the 'Technozen' or 'Frutiger Zen' aesthetic. Using water, greens, lotuses, layered textures, and typography to encapsulate the sort of vibe you would get from visiting a 2000s east-asian spa.",
+    accent: "#8d6fd6",
+    frames: [{ type: "image", src: "assets/graphic-design/chance.jpg" }]
+  },
+
+  {
+    tag: "Experiments",
     title: "Everlong",
     date: "September 2025",
     context:
