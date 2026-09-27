@@ -4,8 +4,7 @@
    in dat file for how frames/carousels work and how to add images.)
 ================================================================== */
 const graphicProjects = [
-
-   {
+  {
     tag: "Experiments",
     title: "Everlong",
     date: "September 2025",
@@ -14,8 +13,8 @@ const graphicProjects = [
     accent: "#8d6fd6",
     frames: [{ type: "image", src: "assets/graphic-design/everlong.jpg" }]
   },
-   
-    {
+
+  {
     tag: "Experiments",
     title: "Duvet",
     date: "September 2025",
@@ -24,18 +23,18 @@ const graphicProjects = [
     accent: "#8d6fd6",
     frames: [{ type: "image", src: "assets/graphic-design/duvet.jpg" }]
   },
-   
-   {
+
+  {
     tag: "Experiments",
     title: "Nothing to Lose",
-    date: "September 2026",
+    date: "September 2025",
     context:
       "An experimental piece exploring melancholy and impermanence through rainy imagery, distorted typography, and expressive pixel elements. The contrast between the cold, reflective photograph and vivid yellow details creates a deliberately chaotic, dreamlike composition.",
     accent: "#8d6fd6",
     frames: [{ type: "image", src: "assets/graphic-design/nothing to lose.jpeg" }]
   },
 
-   {
+  {
     tag: "Experiments",
     title: "Arabian Driftcore",
     date: "September 2025",

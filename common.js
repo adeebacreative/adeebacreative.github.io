@@ -19,7 +19,7 @@ try {
     html.setAttribute("data-theme", remembered);
   }
 } catch (e) {
-  /* if storage blocked, its wtv js wont do anything */
+  /* if storage blocked, js wont do anything */
 }
 
 function stitchedButton(cx, cy, r) {
@@ -114,11 +114,36 @@ if (!easyDoesIt) {
   document.head.appendChild(kf);
 }
 
+/* little sun/moon that swaps depending on current theme, so the invert
+   button reads more like a day/night switch instead of js a gray word
+   sitting in the corner. moon shows in dark mode, sun shows in light. */
+const SUN_ICON = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="12" cy="12" r="4.6" fill="currentColor"/>
+  <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <line x1="12" y1="1.5" x2="12" y2="4.2"/>
+    <line x1="12" y1="19.8" x2="12" y2="22.5"/>
+    <line x1="1.5" y1="12" x2="4.2" y2="12"/>
+    <line x1="19.8" y1="12" x2="22.5" y2="12"/>
+    <line x1="4.6" y1="4.6" x2="6.5" y2="6.5"/>
+    <line x1="17.5" y1="17.5" x2="19.4" y2="19.4"/>
+    <line x1="4.6" y1="19.4" x2="6.5" y2="17.5"/>
+    <line x1="17.5" y1="6.5" x2="19.4" y2="4.6"/>
+  </g>
+</svg>`;
+const MOON_ICON = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M20 14.2A8.6 8.6 0 1 1 9.8 4a7 7 0 0 0 10.2 10.2z" fill="currentColor"/>
+</svg>`;
+function paintSwitchIcon(theme) {
+  const thumb = document.querySelector(".switch-thumb");
+  if (thumb) thumb.innerHTML = theme === "dark" ? MOON_ICON : SUN_ICON;
+}
+
 function setTheme(theme) {
   html.setAttribute("data-theme", theme);
   const switcher = document.getElementById("dim-switch-btn");
   if (switcher) switcher.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
   paintBackdrop(theme);
+  paintSwitchIcon(theme);
   try {
     localStorage.setItem(THEME_KEY, theme);
   } catch (e) {
@@ -133,6 +158,7 @@ if (switcher) {
   });
 }
 paintBackdrop(html.getAttribute("data-theme"));
+paintSwitchIcon(html.getAttribute("data-theme"));
 
 /* ---------- hamburger menu only kicks in below 640px, see CSS ---------- */
 const menuToggle = document.querySelector(".menu-toggle");
@@ -248,7 +274,7 @@ if (motesCanvas) {
      grid:    the <div id="..."> to render pieces into
      mode:    "single"    -> one video or image per piece (video-editing)
               "carousel"  -> a piece can hold several photos/clips,
-                              opens like an Instagram carousel (social, graphic)
+                              opens like an instagram carousel (social, graphic)
               "site"      -> a piece is a live website: preview + a
                               real link to go look at it (websites page)
      pieces:  the array of my projects, shape depends on mode, see
@@ -282,6 +308,33 @@ function buildGallery(config) {
   let cameFrom = null;
   let page = 0;
 
+  /* ---------- pinning ----------
+     lets a project get pinned to the top of its own category grid, w a
+     little pin icon on the card, kinda like pinning a post on instagram.
+     stored per page in localStorage keyed off the piece's title */
+  const PIN_KEY = `pinned:${location.pathname}`;
+  function loadPinned() {
+    try {
+      return new Set(JSON.parse(localStorage.getItem(PIN_KEY) || "[]"));
+    } catch (e) {
+      return new Set(); // storage blocked/corrupt, js start fresh
+    }
+  }
+  function savePinned() {
+    try {
+      localStorage.setItem(PIN_KEY, JSON.stringify([...pinned]));
+    } catch (e) {
+      /* storage blocked alg, pins js won't stay between visits */
+    }
+  }
+  const pinned = loadPinned();
+
+  function pinIcon() {
+    return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2.2a5 5 0 0 0-5 5c0 3.1 2.1 5.3 3.9 8.2l1.1 4.4 1.1-4.4c1.8-2.9 3.9-5.1 3.9-8.2a5 5 0 0 0-5-5z" fill="currentColor"/>
+    </svg>`;
+  }
+
   function peekIcon() {
     return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <circle cx="12" cy="12" r="11" fill="rgba(7,6,15,.55)" stroke="#eef1ff" stroke-width="1"/>
@@ -313,18 +366,10 @@ function buildGallery(config) {
     const firstFrame = mode === "single" && piece.frames?.length ? piece.frames[0] : null;
     const isVideoPiece = firstFrame ? firstFrame.type === "video" || firstFrame.type === "embed" : piece.type === "video";
 
-    // if frames[0] is a youtube link, grab its thumbnail straight from
-    // youtube (same img.youtube.com trick used by hand on the video page)
+    // if frames[0] is a yt link, grab its thumbnail straight from yt
     // instead of needing a poster set manually.
     const firstFrameYtId = firstFrame && firstFrame.type === "embed" ? youTubeId(firstFrame.src) : null;
 
-    // NOTE: "site" mode cards were falling thru to `piece.poster` here, but
-    // websites-data.js pieces don't hv a poster field at all. they hv
-    // "preview" instead. so a site card never actually showed a screenshot
-    // n js sat there tinted. fixed: site cards now use piece.preview for
-    // their thumbnail. this is JUST the grid thumbnail tho. clicking into
-    // the spotlight always shows the real live site regardless (see
-    // fillStageSite below), preview is only ever for the grid cover.
     const posterSrc =
       mode === "carousel" ? piece.frames?.[0]?.src
       : mode === "site" ? piece.preview
@@ -366,29 +411,19 @@ function buildGallery(config) {
         });
       }
     } else if (mode === "single" && firstFrameYtId) {
-      // no local file to preview from, but frames[0] is youtube. so just
-      // borrow youtube's own player for the loop instead of needing a
-      // self-hosted clip. muted + looped + controls off so it reads as a
-      // silent little preview, same vibe as the mp4 version above.
-      // (this only works for youtube. instagram doesn't hand out a
-      // no-login preview like this, so instagram-first carousels just
-      // keep showing the peek icon over the tint like they do now.)
       const ytPreviewSrc = `https://www.youtube.com/embed/${firstFrameYtId}?autoplay=1&mute=1&loop=1&playlist=${firstFrameYtId}&controls=0&modestbranding=1&playsinline=1&disablekb=1&rel=0&iv_load_policy=3`;
 
       const mountYtPreview = () => {
-        if (shot.querySelector(".yt-preview")) return; // already playing, don't double up
+        if (shot.querySelector(".yt-preview")) return;
         const frame = document.createElement("iframe");
         frame.className = "yt-preview";
         frame.src = ytPreviewSrc;
         frame.title = "";
         frame.setAttribute("aria-hidden", "true");
         frame.allow = "autoplay; encrypted-media";
-        shot.insertBefore(frame, shot.querySelector(".badge")); // badge doesn't exist yet on first (auto) mount, works fine either way
+        shot.insertBefore(frame, shot.querySelector(".badge")); 
       };
       const unmountYtPreview = () => {
-        // pulling it out of the dom is what actually kills the sound.
-        // there's no "pause" you can call on someone else's iframe from
-        // out here
         shot.querySelector(".yt-preview")?.remove();
       };
 
@@ -413,6 +448,23 @@ function buildGallery(config) {
               ? "Video"
               : "Image";
     shot.appendChild(badge);
+
+    const isPinned = pinned.has(piece.title);
+    if (isPinned) card.classList.add("is-pinned");
+
+    const pinBtn = document.createElement("button");
+    pinBtn.type = "button";
+    pinBtn.className = "pin-btn" + (isPinned ? " pinned" : "");
+    pinBtn.setAttribute("aria-label", isPinned ? "Unpin this project" : "Pin this project to the top");
+    pinBtn.innerHTML = pinIcon();
+    pinBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); // don't let this also trigger the card's own click n open the spotlight
+      if (pinned.has(piece.title)) pinned.delete(piece.title);
+      else pinned.add(piece.title);
+      savePinned();
+      renderPage(); // re-sort + repaint so the pin actually jumps to the top right away
+    });
+    shot.appendChild(pinBtn);
 
     if (mode === "single" && isVideoPiece) {
       const peek = document.createElement("span");
@@ -441,9 +493,17 @@ function buildGallery(config) {
     return Math.max(1, Math.ceil(pieces.length / PAGE_SIZE));
   }
 
+  /* pinned pieces float to the front, everything else keeps its original
+     order behind them. .sort is stable in every modern engine so this
+     doesn't shuffle anything within either group. */
+  function orderedPieces() {
+    return [...pieces].sort((a, b) => (pinned.has(a.title) ? 0 : 1) - (pinned.has(b.title) ? 0 : 1));
+  }
+
   function renderPage() {
     grid.innerHTML = "";
-    const slice = paginate ? pieces.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE) : pieces;
+    const ordered = orderedPieces();
+    const slice = paginate ? ordered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE) : ordered;
     slice.forEach((p) => grid.appendChild(makeCard(p)));
     if (paginate) renderPager();
   }
@@ -506,7 +566,7 @@ function buildGallery(config) {
     return null;
   }
 
-  /* ---- turns a normal youTube/instagram link into the right embeddable
+  /* ---- turns a normal youtube/instagram link into the right embeddable
      iframe src. paste in whatever link  n this sorts out the rest. ---- */
   function embedSrcFor(url) {
     const ytId = youTubeId(url);
@@ -558,6 +618,117 @@ function buildGallery(config) {
     }
   }
 
+  /* ---- zoomable image (used by carousel image frames below) ----
+     double-click/double-tap or the + button zooms in on wherever u clicked/tapped,
+     then drag (mouse or finger, via pointer events so both work off the same code) pans around. scroll wheel zooms too.
+     resets automatically since paintFrame() below rebuilds this fresh every time the frame changes. */
+  function mountZoomable(src, alt) {
+    const wrap = document.createElement("div");
+    wrap.className = "zoom-wrap";
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = alt || "";
+    img.draggable = false;
+
+    let scale = 1,
+      tx = 0,
+      ty = 0,
+      dragging = false,
+      startX = 0,
+      startY = 0,
+      startTx = 0,
+      startTy = 0,
+      lastTap = 0;
+    const MAX_SCALE = 4;
+
+    function apply() {
+      img.style.width = scale * 100 + "%";
+      img.style.height = scale * 100 + "%";
+      img.style.transform = `translate(${tx}px, ${ty}px)`;
+      img.classList.toggle("is-zoomed", scale > 1);
+    }
+
+    function zoomTo(next, ax, ay) {
+      next = Math.min(MAX_SCALE, Math.max(1, next));
+      const rect = wrap.getBoundingClientRect();
+      const px = ax ?? rect.width / 2;
+      const py = ay ?? rect.height / 2;
+      if (next === 1) {
+        scale = 1;
+        tx = 0;
+        ty = 0;
+      } else {
+        tx -= (px - tx) * (next / scale - 1);
+        ty -= (py - ty) * (next / scale - 1);
+        scale = next;
+      }
+      apply();
+    }
+
+    img.addEventListener("dblclick", (e) => {
+      const rect = wrap.getBoundingClientRect();
+      zoomTo(scale > 1 ? 1 : 2.4, e.clientX - rect.left, e.clientY - rect.top);
+    });
+    img.addEventListener(
+      "wheel",
+      (e) => {
+        e.preventDefault();
+        const rect = wrap.getBoundingClientRect();
+        zoomTo(scale - e.deltaY * 0.0015 * scale, e.clientX - rect.left, e.clientY - rect.top);
+      },
+      { passive: false }
+    );
+    img.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "touch") {
+        const now = Date.now();
+        if (now - lastTap < 320) {
+          const rect = wrap.getBoundingClientRect();
+          zoomTo(scale > 1 ? 1 : 2.4, e.clientX - rect.left, e.clientY - rect.top);
+        }
+        lastTap = now;
+      }
+      if (scale <= 1) return;
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startTx = tx;
+      startTy = ty;
+      img.classList.add("is-dragging");
+      img.setPointerCapture(e.pointerId);
+    });
+    img.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      tx = startTx + (e.clientX - startX);
+      ty = startTy + (e.clientY - startY);
+      apply();
+    });
+    function endDrag() {
+      dragging = false;
+      img.classList.remove("is-dragging");
+    }
+    img.addEventListener("pointerup", endDrag);
+    img.addEventListener("pointercancel", endDrag);
+
+    wrap.appendChild(img);
+
+    const controls = document.createElement("div");
+    controls.className = "zoom-controls";
+    const outBtn = document.createElement("button");
+    outBtn.type = "button";
+    outBtn.textContent = "–";
+    outBtn.setAttribute("aria-label", "Zoom out");
+    outBtn.addEventListener("click", () => zoomTo(scale - 0.6));
+    const inBtn = document.createElement("button");
+    inBtn.type = "button";
+    inBtn.textContent = "+";
+    inBtn.setAttribute("aria-label", "Zoom in");
+    inBtn.addEventListener("click", () => zoomTo(scale + 0.6));
+    controls.append(outBtn, inBtn);
+    wrap.appendChild(controls);
+
+    return wrap;
+  }
+
   /* ---- spotlight: carousel (multiple frames, instagram-style) ---- */
   function fillStageCarousel(piece) {
     stage.innerHTML = "";
@@ -572,8 +743,6 @@ function buildGallery(config) {
     // first paint, so it js appears normally instead of sliding in from
     // nowhere). used to pick which slide-in animation plays, see the
     // .frame-slide-next / .frame-slide-prev keyframes in styles.css.
-    // makes swiping thru photos/clips actually feel like swiping instead
-    // of a flat static swap.
     function paintFrame(direction) {
       frameHost.innerHTML = "";
       const f = frames[idx];
@@ -589,10 +758,7 @@ function buildGallery(config) {
         el.src = f.src;
         el.style.cssText = "width:100%;height:100%;object-fit:contain;";
       } else {
-        el = document.createElement("img");
-        el.src = f.src;
-        el.alt = "";
-        el.style.cssText = "width:100%;height:100%;object-fit:contain;";
+        el = mountZoomable(f.src, "");
       }
       if (!easyDoesIt && direction) {
         el.classList.add(direction === "next" ? "frame-slide-next" : "frame-slide-prev");
@@ -633,9 +799,9 @@ function buildGallery(config) {
       stage.appendChild(nextBtn);
       stage.appendChild(dotWrap);
 
-      // actual finger-swipe support, not js the arrow buttons. swipe
-      // left goes to the next frame, swipe right goes back. 40px min
-      // distance so a tap or a lil accidental wobble doesn't count.
+      // actual finger-swipe support, not js the arrow buttons
+      // swipe left goes to the next frame, swipe right goes back
+      // 40px min distance so a tap or a lil accidental wobble doesn't count
       let touchStartX = null;
       frameHost.addEventListener(
         "touchstart",
@@ -715,13 +881,6 @@ function buildGallery(config) {
   }
 
   function closeSpotlight() {
-    // used to just do `stage.querySelector("video")?.pause()` here, but that
-    // only ever stopped a real <video> tag. it did nothing for an embedded
-    // youtube/instagram iframe (no "pause" you can call on someone else's
-    // iframe from out here), so closing the spotlight on an embed left the
-    // audio playing in the background even tho it was hidden. wiping the
-    // whole stage kills it either way. video or iframe, since it's not
-    // in the dom anymore to keep making noise.
     stage.innerHTML = "";
     veil.hidden = true;
     document.body.style.overflow = "";
@@ -759,14 +918,11 @@ function buildGallery(config) {
 }
 
 /****************************
-*  Tinkerbell Magic Sparkle *
+*  tinkerbell magic sparkle *
 *(c)2005-13 mf2fm web-design*
-*  http://www.mf2fm.com/rv  *
-****************************/
-/****************************
-*  Dynamic Theme Sparkle    *
+*  dynamic theme sparkle    *
 * (c)2005-13 mf2fm web-design*
-* Modified for CSS Variables *
+*  http://www.mf2fm.com/rv  *
 ****************************/
 
 (function() {
@@ -785,8 +941,8 @@ function buildGallery(config) {
   const tiny = [];
   const star = [];
   const starv = [];
-  const starMax = []; // life this particular sparkle was spawned with, so the
-                       // shrink/fade points below still land at the halfway mark
+  const starMax = [];
+  // life this particular sparkle was spawned with, so the shrink n fade points below still land at the halfway mark
   const starx = [];
   const stary = [];
   const tinyx = [];
@@ -822,10 +978,10 @@ function buildGallery(config) {
     sparkle();
   });
 
-  // Dynamically extracts Coraline / Swan Lake colors from your active CSS variables
+  // extract colours from css variables
   function getThemeColor() {
     const rootStyle = getComputedStyle(document.documentElement);
-    // Randomly alternates between your primary accent and secondary accent colors
+    // alternate between accent colours
     const useSecondary = Math.random() > 0.5;
     const colorVar = useSecondary ? '--accent-2' : '--accent';
     return rootStyle.getPropertyValue(colorVar).trim() || "#7ba3e8";
@@ -841,7 +997,7 @@ function buildGallery(config) {
           star[c].style.top = (stary[c] = y + 1) + "px";
           star[c].style.clip = "rect(0px, 5px, 5px, 0px)";
           
-          // grab the live color from the active theme
+          // live colour from active theme
           const dynamicColor = getThemeColor();
           if (star[c].childNodes[0] && star[c].childNodes[1]) {
             star[c].childNodes[0].style.backgroundColor = dynamicColor;
@@ -948,7 +1104,7 @@ function buildGallery(config) {
     }
   };
 
-  // called when the spotlight closes trail goes back to its normal, lazier decay
+  // called when the spotlight closes trail goes back to its normal slow decay
   window.resumeSparkleTrail = function () {
     fastDecay = false;
   };

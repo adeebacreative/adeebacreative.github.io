@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap");
-
 * {
   box-sizing: border-box;
 }
@@ -55,7 +54,6 @@ body {
     var(--bg);
   color: var(--ink);
   font-family: "Inter", sans-serif;
-  -webkit-font-smoothing: antialiased;
   transition:
     background 0.5s ease,
     color 0.5s ease;
@@ -177,9 +175,7 @@ nav.top a[aria-current] {
   color: var(--accent);
 }
 
-/* ---------- hamburger menu hidden on wide screens, takes over on phones ----------
-   3 lines that morph into an x. aria-expanded is already toggled by the JS
-   for the open/close + focus logic, so the animation just hangs off that  */
+/* ---------- hamburger menu hidden on wide screens, takes over on phones ---------- */
 .menu-toggle {
   display: none;
   flex-direction: column;
@@ -202,7 +198,10 @@ nav.top a[aria-current] {
   background: var(--ink-dim);
   border-radius: 999px;
   transform-origin: center;
-  transition: transform 0.25s ease, opacity 0.2s ease, background-color 0.2s ease;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease,
+    background-color 0.2s ease;
 }
 .menu-toggle:hover .menu-bar {
   background: var(--accent);
@@ -233,7 +232,9 @@ nav.top a[aria-current] {
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: max-height 0.35s ease, opacity 0.25s ease;
+    transition:
+      max-height 0.35s ease,
+      opacity 0.25s ease;
   }
   nav.top.open {
     max-height: 260px;
@@ -551,6 +552,36 @@ nav.top a[aria-current] {
   text-transform: uppercase;
 }
 
+/* little instagram/youtube icons, sits under the email/linkedin row */
+.social-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.social-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.social-icon:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
 /* ================================================================
    CATEGORY PAGE HERO + BREADCRUMB
    ================================================================ */
@@ -764,6 +795,80 @@ nav.top a[aria-current] {
   opacity: 1;
 }
 
+/* ---------- pin button (video/social/graphic/website pages) ----------
+   sits opposite the badge. faint til hover, always visible + filled
+   once a piece is actually pinned, same idea as instagram's pin icon
+   showing up on a pinned post. */
+.piece-shot .pin-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 3;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.piece-shot .pin-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.piece:hover .pin-btn,
+.piece:focus-visible .pin-btn,
+.piece-shot .pin-btn.pinned {
+  opacity: 1;
+}
+.piece-shot .pin-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+.piece-shot .pin-btn.pinned {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+/* the lil corner ribbon that marks a pinned card even when the mouse
+   isn't anywhere near it, mostly for touch screens that don't hover */
+.piece.is-pinned {
+  border-color: var(--accent);
+}
+.piece.is-pinned::before {
+  content: "Pinned";
+  position: absolute;
+  z-index: 3;
+  top: 0.6rem;
+  left: 0.6rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+}
+/* badge shifts down out of the way when the pinned ribbon takes the
+   top-left corner instead */
+.piece.is-pinned .piece-shot .badge {
+  top: 2.5rem;
+}
+.piece {
+  position: relative;
+}
+
 /* ---------- pager (grid pagination, see script.js, off by default) ---------- */
 .pager {
   display: flex;
@@ -928,9 +1033,8 @@ nav.top a[aria-current] {
 
 /* slide-in for whichever frame just got swiped/clicked to, so moving
    thru a carousel feels like swiping instead of a flat static swap.
-   direction-aware. next comes in from the right, prev comes in from
-   the left. common.js skips adding these classes entirely for
-   reduced-motion browsers, so no need to guard it again in here. */
+   direction-aware. next comes in from the right, prev comes in from the left
+   common.js skips adding these classes entirely for reduced-motion browsers */
 @keyframes frameInFromRight {
   from {
     opacity: 0;
@@ -956,6 +1060,60 @@ nav.top a[aria-current] {
 }
 .frame-slide-prev {
   animation: frameInFromLeft 0.32s ease-out;
+}
+
+/* ---------- zoom (image frames only, graphic-design + social-marketing) ----------
+   .zoom-wrap clips it, the img inside gets translated/scaled by JS.
+   double-click/double-tap or the + button zooms in, then u can drag to
+   pan around, same muscle memory as zooming a photo on ur phone. */
+.zoom-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  touch-action: none;
+}
+.zoom-wrap img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  will-change: transform, width, height;
+  cursor: zoom-in;
+}
+.zoom-wrap img.is-zoomed {
+  cursor: grab;
+}
+.zoom-wrap img.is-dragging {
+  cursor: grabbing;
+}
+.zoom-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  z-index: 6;
+  display: flex;
+  gap: 0.4rem;
+}
+.zoom-controls button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+.zoom-controls button:hover {
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .spotlight-info {
@@ -1047,27 +1205,71 @@ footer.tail {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   background: none;
-  border: 1px solid transparent;
-  color: var(--ink-faint);
-  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 0.4rem 0.8rem;
   border-radius: 999px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   transition:
     color 0.25s ease,
     border-color 0.25s ease,
     opacity 0.25s ease;
-  opacity: 0.7;
+  opacity: 0.9;
 }
 .dim-switch button:hover {
   color: var(--accent);
-  border-color: var(--line);
+  border-color: var(--accent);
   opacity: 1;
 }
 .dim-switch .bracket {
   color: var(--ink-faint);
+}
+/* the invert switch: a little pill track w a thumb that slides side to
+   side, sun/moon painted into the thumb by paintSwitchIcon() in
+   common.js. reads off the button's own aria-pressed so it always
+   matches whatever setTheme() just set */
+.switch-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 35%, var(--bg));
+  transition: background 0.35s ease;
+}
+#dim-switch-btn[aria-pressed="true"] .switch-track {
+  background: var(--accent-2);
+}
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--accent-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#dim-switch-btn[aria-pressed="true"] .switch-thumb {
+  transform: translateX(16px);
+}
+.switch-thumb svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@media (prefers-reduced-motion: reduce) {
+  .switch-track,
+  .switch-thumb {
+    transition: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1085,12 +1287,18 @@ footer.tail {
 }
 
 /* cursor */
-html, body {
-    cursor: url('assets/cursor.png') 0 0, default !important;
+html,
+body {
+  cursor:
+    url("assets/cursor.png") 0 0,
+    default !important;
 }
 
 /* pointer */
-a, button, .clickable {
-    cursor: url('assets/pointer.png') 0 0, pointer !important;
-}
+a,
+button,
+.clickable {
+  cursor:
+    url("assets/pointer.png") 0 0,
+    pointer !important;
 }
