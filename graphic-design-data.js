@@ -7,7 +7,7 @@ const graphicProjects = [
   {
     tag: "Experiments",
     title: "Rosemary",
-    date: "October 2025",
+    date: "October 2026",
     context:
       "An experimental design primarily inspired by my friend’s Final Fantasy XIV OC. Using gothic architecture, layered textures, and lyrics from Deftones’ 'Rosemary' to complement the overall aesthetic.",
     accent: "#8d6fd6",
@@ -17,7 +17,7 @@ const graphicProjects = [
   {
     tag: "Experiments",
     title: "Chance",
-    date: "September 2025",
+    date: "September 2026",
     context:
       "An experimental piece inspired by the 'Technozen' or 'Frutiger Zen' aesthetic. Using water, greens, lotuses, layered textures, and typography to encapsulate the sort of vibe you would get from visiting a 2000s east-asian spa.",
     accent: "#8d6fd6",
@@ -27,7 +27,7 @@ const graphicProjects = [
   {
     tag: "Experiments",
     title: "Everlong",
-    date: "September 2025",
+    date: "September 2026",
     context:
       "An experimental piece inspired by Foo Fighters’ 'Everlong', using underwater imagery, layered textures, and distorted typography to recreate the song’s hazy, submerged atmosphere.",
     accent: "#8d6fd6",
@@ -37,7 +37,7 @@ const graphicProjects = [
   {
     tag: "Experiments",
     title: "Duvet",
-    date: "September 2025",
+    date: "September 2026",
     context:
       "An experimental digital artwork inspired by the melancholy of Boa's Duvet, layering angelic imagery, cool blue tones, and distorted typography to create a dreamlike composition.",
     accent: "#8d6fd6",
@@ -47,7 +47,7 @@ const graphicProjects = [
   {
     tag: "Experiments",
     title: "Nothing to Lose",
-    date: "September 2025",
+    date: "September 2026",
     context:
       "An experimental piece exploring melancholy and impermanence through rainy imagery, distorted typography, and expressive pixel elements. The contrast between the cold, reflective photograph and vivid yellow details creates a deliberately chaotic, dreamlike composition.",
     accent: "#8d6fd6",
