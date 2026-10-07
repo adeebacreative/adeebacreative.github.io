@@ -6,6 +6,16 @@
 const graphicProjects = [
   {
     tag: "Experiments",
+    title: "Rosemary",
+    date: "October 2025",
+    context:
+      "An experimental design primarily inspired by my friend’s Final Fantasy XIV OC. Using gothic architecture, layered textures, and lyrics from Deftones’ 'Rosemary' to complement the overall aesthetic.",
+    accent: "#8d6fd6",
+    frames: [{ type: "image", src: "assets/graphic-design/rosemary.png" }]
+  },
+   
+  {
+    tag: "Experiments",
     title: "Chance",
     date: "September 2025",
     context:
