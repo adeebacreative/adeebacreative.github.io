@@ -13,7 +13,7 @@ const graphicProjects = [
     accent: "#8d6fd6",
     frames: [{ type: "image", src: "assets/graphic-design/rosemary.png" }]
   },
-   
+
   {
     tag: "Experiments",
     title: "Chance",
