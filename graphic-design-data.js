@@ -4,6 +4,17 @@
    in dat file for how frames/carousels work and how to add images.)
 ================================================================== */
 const graphicProjects = [
+  
+  {
+    tag: "Experiments",
+    title: "Memories",
+    date: "November 2026",
+    context:
+      "An experimental collage inspired by a photo of my friend. Mix of Y2K futurism and gothic elements. Built with heavy halftone textures, bright blues and whites, and glitchy aesthetics.",
+    accent: "#8d6fd6",
+    frames: [{ type: "image", src: "assets/graphic-design/memories.jpg" }]
+  },
+   
   {
     tag: "Experiments",
     title: "Rosemary",
