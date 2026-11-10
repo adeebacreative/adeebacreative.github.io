@@ -309,25 +309,46 @@ function buildGallery(config) {
   let page = 0;
 
   /* ---------- pinning ----------
-     lets a project get pinned to the top of its own category grid, w a
-     little pin icon on the card, kinda like pinning a post on instagram.
-     stored per page in localStorage keyed off the piece's title */
+     kinda like pinning a post on instagram.
+     "pinned: true" in a project's data = pinned for everyone on first
+     visit. visitors can still pin/unpin whatever, that's saved in
+     localStorage as tweaks on top of my defaults (keyed off the piece's title) */
   const PIN_KEY = `pinned:${location.pathname}`;
-  function loadPinned() {
+  const defaultPinned = new Set(pieces.filter((p) => p.pinned).map((p) => p.title));
+  function loadTweaks() {
     try {
-      return new Set(JSON.parse(localStorage.getItem(PIN_KEY) || "[]"));
+      const t = JSON.parse(localStorage.getItem(PIN_KEY) || "{}");
+      return { add: new Set(t.add || []), remove: new Set(t.remove || []) };
     } catch (e) {
-      return new Set(); // storage blocked/corrupt, js start fresh
+      return { add: new Set(), remove: new Set() }; // storage blocked/corrupt, js use my defaults
     }
   }
-  function savePinned() {
+  function saveTweaks() {
     try {
-      localStorage.setItem(PIN_KEY, JSON.stringify([...pinned]));
+      localStorage.setItem(PIN_KEY, JSON.stringify({ add: [...tweaks.add], remove: [...tweaks.remove] }));
     } catch (e) {
       /* storage blocked alg, pins js won't stay between visits */
     }
   }
-  const pinned = loadPinned();
+  const tweaks = loadTweaks();
+  const pinned = new Set();
+  function refreshPinned() {
+    pinned.clear();
+    defaultPinned.forEach((t) => !tweaks.remove.has(t) && pinned.add(t));
+    tweaks.add.forEach((t) => pinned.add(t));
+  }
+  function togglePin(t) {
+    if (pinned.has(t)) {
+      tweaks.add.delete(t);
+      if (defaultPinned.has(t)) tweaks.remove.add(t);
+    } else {
+      tweaks.remove.delete(t);
+      if (!defaultPinned.has(t)) tweaks.add.add(t);
+    }
+    saveTweaks();
+    refreshPinned();
+  }
+  refreshPinned();
 
   function pinIcon() {
     return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -459,9 +480,7 @@ function buildGallery(config) {
     pinBtn.innerHTML = pinIcon();
     pinBtn.addEventListener("click", (e) => {
       e.stopPropagation(); // don't let this also trigger the card's own click n open the spotlight
-      if (pinned.has(piece.title)) pinned.delete(piece.title);
-      else pinned.add(piece.title);
-      savePinned();
+      togglePin(piece.title);
       renderPage(); // re-sort + repaint so the pin actually jumps to the top right away
     });
     shot.appendChild(pinBtn);
