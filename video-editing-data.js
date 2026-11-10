@@ -25,6 +25,10 @@
              instagram link instead of "full" and it'll embed
              tht instead of looking for a local file.
      accent  a hex colour, tints the card before the poster loads.
+
+     pinned  OPTIONAL. true = pinned to the top for everyone on
+             their first visit. they can still unpin it themselves.
+             works the same on every page.
      
      frames  OPTIONAL. leave it off and the project behaves like
              normal (one video/image via poster/preview/full/embed
@@ -98,7 +102,8 @@ const videoProjects = [
     preview: "",
     full: "",
     embed: "https://youtu.be/AlNKu7T7SLk",
-    accent: "#6c7fdb"
+    accent: "#6c7fdb",
+    pinned: true
   },
 
   {
@@ -112,7 +117,8 @@ const videoProjects = [
     preview: "",
     full: "",
     embed: "https://youtu.be/Mlz-Rxa25fs",
-    accent: "#6c7fdb"
+    accent: "#6c7fdb",
+    pinned: true
   },
 
   {
@@ -126,7 +132,8 @@ const videoProjects = [
     preview: "",
     full: "",
     embed: "https://youtu.be/PZPaOsTE-ek",
-    accent: "#6c9fdb"
+    accent: "#6c9fdb",
+    pinned: true
   },
 
   {
