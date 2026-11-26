@@ -4,7 +4,16 @@
    in dat file for how frames/carousels work and how to add images.)
 ================================================================== */
 const graphicProjects = [
-  
+  {
+    tag: "Experiments",
+    title: "Hero",
+    date: "November 2026",
+    context:
+      "An design inspired by Alice in Tim Burton's 'Alice in Wonderland' (2010). Contrasts dark spirals and chains alongside swords and light. It uses monochromatic textures and distorted imagery to capture the exact shift from Alice's captivity to finding her inner hero.",
+    accent: "#8d6fd6",
+    frames: [{ type: "image", src: "assets/graphic-design/hero.png" }]
+  },
+
   {
     tag: "Experiments",
     title: "Memories",
@@ -14,7 +23,7 @@ const graphicProjects = [
     accent: "#8d6fd6",
     frames: [{ type: "image", src: "assets/graphic-design/memories.jpg" }]
   },
-   
+
   {
     tag: "Experiments",
     title: "Rosemary",
